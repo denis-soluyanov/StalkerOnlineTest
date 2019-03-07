@@ -69,6 +69,10 @@ int main(int argc, char * argv[])
             }
         }
 
+        if (users.empty()) {
+            throw std::runtime_error("Input file is empty or has an incorrect data format!");
+        }
+
         start(users);
     }
     catch (const std::exception& e) {

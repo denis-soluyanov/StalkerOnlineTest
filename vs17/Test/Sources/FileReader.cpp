@@ -6,7 +6,7 @@ FileReader::FileReader(const std::string& filename)
     istream_.open(filename, std::ios::in);
 
     if (!istream_.is_open()) {
-        std::string message = "Сouldn't open a file:" + filename;
+        std::string message = "Сouldn't open a file: " + filename;
         throw std::runtime_error(message.c_str());
     }
 }
