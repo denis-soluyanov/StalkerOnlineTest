@@ -22,7 +22,7 @@ static void welcomeMessage()
 
 static void start(std::vector<User>& users)
 {
-    User::SortOrder tag;
+    User::SortOrder order;
     std::istream_iterator<int> itEOF;
 
     welcomeMessage();
@@ -31,23 +31,24 @@ static void start(std::vector<User>& users)
     {
         switch (*it) {
         case SortByName:
-            tag = User::SortOrder::byName;
+            order = User::SortOrder::byName;
             break;
         case SortBySurname:
-            tag = User::SortOrder::bySurname;
+            order = User::SortOrder::bySurname;
             break;
         case SortByPhoneNumber:
-            tag = User::SortOrder::byPhoneNumber;
+            order = User::SortOrder::byPhoneNumber;
             break;
         case Cancel:
+            std::wcout << L"Отмена ввода\n";
             return;
         default:
             std::wcout << L"Неправильная команда!\n";
             continue;
         }
 
-        std::sort(users.begin(), users.end(), User::Comparator(tag));
-        printUsers<std::vector>(users, tag);
+        std::sort(users.begin(), users.end(), User::Comparator(order));
+        printUsers<std::vector>(users, order);
     }
 }
 
