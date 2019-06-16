@@ -3,47 +3,59 @@
 #include <vector>
 #include <iterator>
 
+
 enum Commands
 {
-    SortByName        = User::SortOrder::byName,
-    SortBySurname     = User::SortOrder::bySurname,
-    SortByPhoneNumber = User::SortOrder::byPhoneNumber,
-    Cancel            = -1,
+    SortByName    = User::SortOrder::byName,
+    SortBySurname = User::SortOrder::bySurname,
+    SortById      = User::SortOrder::byId,
+    Cancel        = -1,
 };
 
 static void welcomeMessage()
 {
-    std::wcout << L"Для сортировки по именам введите: " << Commands::SortByName
-               << L", по фамилиям введите: "            << Commands::SortBySurname
-               << L", по телефонам введите: "           << Commands::SortByPhoneNumber
-               << L"\nДля отмены наберите: "            << Commands::Cancel;
-    std::wcout << L'\n';
+    std::cout << "For sorting users by name press: " << Commands::SortByName
+              << ", by surname press: "              << Commands::SortBySurname
+              << ", by ID press: "                   << Commands::SortById
+              << "\nTo cancel, press: "              << Commands::Cancel;
+    std::cout << std::endl;
+}
+
+static std::istream& getCommandFromUser(std::string& str)
+{
+    std::cout << "> ";
+    return std::getline(std::cin, str);
 }
 
 static void start(std::vector<User>& users)
 {
     User::SortOrder order;
-    std::istream_iterator<int> itEOF;
+    std::string userInput;
 
     welcomeMessage();
 
-    for (std::istream_iterator<int> it(std::cin); it != itEOF; ++it)
-    {
-        switch (*it) {
-        case SortByName:
-            order = User::SortOrder::byName;
-            break;
-        case SortBySurname:
-            order = User::SortOrder::bySurname;
-            break;
-        case SortByPhoneNumber:
-            order = User::SortOrder::byPhoneNumber;
-            break;
-        case Cancel:
-            std::wcout << L"Отмена ввода\n";
-            return;
-        default:
-            std::wcout << L"Неправильная команда!\n";
+    while (getCommandFromUser(userInput)) {
+
+        try {
+            switch (std::stoi(userInput)) {
+            case SortByName:
+                order = User::SortOrder::byName;
+                break;
+            case SortBySurname:
+                order = User::SortOrder::bySurname;
+                break;
+            case SortById:
+                order = User::SortOrder::byId;
+                break;
+            case Cancel:
+                std::cout << "Cancel\n";
+                return;
+            default:
+                throw std::exception();
+            }
+        }
+        catch (std::exception&) {
+            std::cout << "Wrong command!\n";
             continue;
         }
 
@@ -52,12 +64,15 @@ static void start(std::vector<User>& users)
     }
 }
 
+
 int main(int argc, char * argv[])
 {
     std::locale::global(std::locale("rus_rus.1251"));
 
     try {
-        if (argc < 2) throw std::logic_error("No input file!");
+        if (argc < 2) {
+            throw std::logic_error("No input file!");
+        }
 
         std::string filename = argv[1];
 

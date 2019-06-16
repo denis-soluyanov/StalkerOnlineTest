@@ -4,56 +4,58 @@
 
 struct User
 {
-    std::wstring surname     = L"";
-    std::wstring name        = L"";
-    uint64_t     phoneNumber = 0;
+    std::wstring name    = L"";
+    std::wstring surname = L"";
+    uint64_t     id      = 0;
 
     enum class SortOrder
     {
-        byName        = 1,
-        bySurname     = 2,
-        byPhoneNumber = 3,
+        byName    = 1,
+        bySurname = 2,
+        byId      = 3,
     };
 
     template<template<class> class RelationalOp = std::less>
     struct Comparator
     {
+        User::SortOrder order_ = User::SortOrder::byName;
+
         bool operator() (const User& lhs, const User& rhs) const
         {
             RelationalOp op;
 
             switch (order_) {
-            case User::SortOrder::byName:        return op(lhs.name, rhs.name);
-            case User::SortOrder::bySurname:     return op(lhs.surname, rhs.surname);
-            case User::SortOrder::byPhoneNumber: return op(lhs.phoneNumber, rhs.phoneNumber);
+            case User::SortOrder::byName:     return op(lhs.name, rhs.name);
+            case User::SortOrder::bySurname:  return op(lhs.surname, rhs.surname);
+            case User::SortOrder::byId:       return op(lhs.id, rhs.id);
+            default:                          return false;
             }
         }
-        User::SortOrder order_ = User::SortOrder::byName;
 
-        explicit Comparator(User::SortOrder order) : order_(order) {}
+        explicit Comparator(User::SortOrder order) : order_(order) {
+            /* Empty */
+        }
     };
-
-    template<template<class> class TContainer>
-    friend void printUsers(const TContainer<User>& users, User::SortOrder order);
-
-    friend class FileReader;
 };
+
 
 template<template<class> class TContainer>
 inline void printUsers(const TContainer<User>& users, User::SortOrder order)
 {
+    std::wcout << L"-------------------------------------------------------\n";
     for (const auto& user : users)
     {
         switch (order) {
         case User::SortOrder::byName:
-            std::wcout << user.name << L' ' << user.surname << ": " << user.phoneNumber << L'\n';
+            std::wcout << user.name << L' ' << user.surname << ": " << user.id << L'\n';
             break;
         case User::SortOrder::bySurname:
-            std::wcout << user.surname << L' ' << user.name << ": " << user.phoneNumber << L'\n';
+            std::wcout << user.surname << L' ' << user.name << ": " << user.id << L'\n';
             break;
-        case User::SortOrder::byPhoneNumber:
-            std::wcout << user.phoneNumber << ": " << user.surname << L' ' << user.name << L'\n';
+        case User::SortOrder::byId:
+            std::wcout << user.id << ": " << user.name << L' ' << user.surname << L'\n';
             break;
         }
     }
+    std::wcout << L"-------------------------------------------------------\n";
 }
